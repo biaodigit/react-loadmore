@@ -1,22 +1,41 @@
 import * as React from 'react'
-// import List from './components/list'
+import LoadMore from './component/load-more'
+import ThreeColList from './component/three-col-list'
 import './App.scss'
 
-interface PropsType {
-    // text:string
+
+const arr = Array(18).fill({ image: require('../assets/img/empty.png'), text: 'testtest' })
+
+
+interface StateType {
+    list: Array<{ image: string, text: string }>
+    hasMore: boolean
 }
 
-class App extends React.Component<PropsType, {}> {
+class App extends React.Component<{}, StateType> {
     constructor(props) {
         super(props)
+        this.state = {
+            list: arr.slice(0),
+            hasMore: true
+        }
+    }
+
+    componentDidMount() {
+
+    }
+
+    async loadMore() {
+
     }
 
     render() {
+        let { list, hasMore } = this.state
         return (
             <div className="wrap">
-                <h1>react lazyload！</h1>
-                <p>hello worlds</p>
-                {/* <List/> */}
+                <LoadMore onBottom={this.loadMore} hasMore={hasMore}>
+                    <ThreeColList data={list} />
+                </LoadMore>
             </div>
         )
     }
