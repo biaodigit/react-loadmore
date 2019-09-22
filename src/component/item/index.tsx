@@ -1,9 +1,11 @@
 import * as React from 'react'
+import Projector, {Cache} from '../load-more/projector'
 
 interface PropsType {
   renderCell: (item: any, itemIndex: number) => React.ReactNode
   item: any
   itemIndex: number
+  projector: Projector
 }
 
 class Item extends React.Component<PropsType> {
@@ -11,6 +13,10 @@ class Item extends React.Component<PropsType> {
   constructor(props) {
     super(props)
     this.itemRef = React.createRef()
+  }
+
+  public setCache() {
+
   }
   render() {
     const { renderCell, item, itemIndex } = this.props
