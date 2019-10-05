@@ -21,19 +21,19 @@ class App extends React.Component<{}, StateType> {
         }
     }
 
-    componentDidMount() {
 
-    }
-
-    async loadMore() {
-
+    loadMore() {
+       let list = this.state.list.slice(0)
+       this.setState({
+           list: list.concat(arr)
+       })
     }
 
     render() {
         let { list, hasMore } = this.state
         return (
             <div className="wrap">
-                <LoadMore onBottom={this.loadMore} hasMore={hasMore}>
+                <LoadMore onBottom={this.loadMore.bind(this)} hasMore={hasMore}>
                     <ThreeColList data={list} />
                 </LoadMore>
             </div>

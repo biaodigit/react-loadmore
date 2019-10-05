@@ -1,34 +1,41 @@
 import * as React from 'react'
+import Projector from './projector'
 
 
 interface PropsType {
-    onBottom: () => Promise<void>
+    onBottom: () => void
     hasMore: boolean
 }
 
 interface StateType {
     loading: boolean
+    startIndex: number
+    endIndex: number
 }
 
 class LoadMore extends React.Component<PropsType, StateType> {
+    public divDom: React.RefObject<HTMLDivElement>
+
     private io: any
     private footerRef: React.RefObject<HTMLDivElement>
+    private scrollTop: number
+    private projector: Projector
+
     constructor(props) {
         super(props)
         this.state = {
-            loading: false
+            loading: false,
+            startIndex: 0,
+            endIndex: 17
         }
         this.footerRef = React.createRef()
+        this.divDom = React.createRef()
     }
 
     private initScrollLoad(entries) {
         const { onBottom, hasMore } = this.props
-        // if(!hasMore){
-        //   this.io.unobserve(this.footerRef)
-        // }
-        const { loading } = this.state
         entries.forEach(item => {
-            if (item.intersectionRatio <= 0 || loading || !hasMore) {
+            if (item.intersectionRatio <= 0 || !hasMore) {
                 return
             }
 
@@ -36,28 +43,49 @@ class LoadMore extends React.Component<PropsType, StateType> {
                 loading: true
             })
 
-            onBottom().then(() => {
-                this.setState({
-                    loading: false
-                })
-            })
-
+            onBottom()
         })
     }
 
-    componentDidMount() {
-        this.io = new IntersectionObserver((entries) => this.initScrollLoad(entries))
-        this.io.observe(this.footerRef.current)
+    public componentWillMount() {
+        this.projector = new Projector({ divDom: this.divDom.current })
+        this.projector.subscribe((startIndex, endIndex) => {
+            this.setState({
+                startIndex,
+                endIndex
+            })
+        })
     }
 
-    render() {
+    public componentDidMount() {
+        this.io = new IntersectionObserver((entries) => this.initScrollLoad(entries))
+        this.io.observe(this.footerRef.current)
+        window.addEventListener('scroll', this.onScroll.bind(this))
+    }
+
+    public render() {
+        let { startIndex, endIndex } = this.state
+        const childrenWithProps = React.Children.map(this.props.children, (child: any) => {
+            return React.cloneElement(child, { startIndex, endIndex, projector: this.projector })
+        })
         return (
-            <React.Fragment>
-                {this.props.children}
+            <div ref={this.divDom} className="container">
+                {childrenWithProps}
                 <div ref={this.footerRef}></div>
                 {/* {loading ? <Loading /> : null} */}
-            </React.Fragment>
+            </div>
         )
+    }
+
+    private onScroll() {
+        const newScrollTop = this.scrollTop = this.divDom.current.scrollTop
+        if (this.scrollTop < newScrollTop) {
+            this.projector.up()
+        } else {
+            this.projector.down()
+        }
+
+        this.scrollTop = this.divDom.current.scrollTop
     }
 }
 

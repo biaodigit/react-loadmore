@@ -1,11 +1,12 @@
 import * as React from 'react'
-import Projector, {Cache} from '../load-more/projector'
+import Projector from '../load-more/projector'
+import './index.scss'
 
 interface PropsType {
-  renderCell: (item: any, itemIndex: number) => React.ReactNode
+  renderCell: (item: any) => React.ReactNode
   item: any
   itemIndex: number
-  projector: Projector
+  projector?: Projector
 }
 
 class Item extends React.Component<PropsType> {
@@ -15,14 +16,34 @@ class Item extends React.Component<PropsType> {
     this.itemRef = React.createRef()
   }
 
-  public setCache() {
-
+  public componentDidMount() {
+    if (this.props.projector) {
+      this.setCache()
+    }
   }
-  render() {
-    const { renderCell, item, itemIndex } = this.props
+
+  public setCache() {
+    const { projector, itemIndex } = this.props;
+    const cachedItemRect = projector.cachedItemRect;
+    const prevItem = cachedItemRect[itemIndex - 3]
+    const rect = this.itemRef.current.getBoundingClientRect()
+
+    if (prevItem) {
+      const bottom = prevItem.bottom + rect.height;
+      const top = prevItem.bottom;
+      cachedItemRect[itemIndex] = { index: itemIndex, top, bottom, height: rect.height }
+    } else {
+      const bottom = rect.bottom;
+      const top = rect.top;
+      cachedItemRect[itemIndex] = { index: itemIndex, top, bottom, height: rect.height }
+    }
+  }
+
+  public render() {
+    const { renderCell, item } = this.props
     return (
-      <div ref={this.itemRef}>
-        {renderCell(item, itemIndex)}
+      <div className="col" ref={this.itemRef}>
+        {renderCell(item)}
       </div>
     )
   }
