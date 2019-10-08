@@ -23,7 +23,6 @@ const ThreeColList: React.FC<PropsType> = (props) => {
         )
     }
 
-    console.log(props)
     return (
         <div className="three-col-wrap">
             {props.data.map((item, index) => (

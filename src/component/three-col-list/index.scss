@@ -2,16 +2,16 @@
     font-family: 'Roboto-Regular';
     padding: 0 15px;
     margin: 0 0 0 -10px;
-    &:after {
-        display: table;
-        clear: both;
-        visibility: hidden;
-        height: 0;
-        overflow: hidden;
-        content: " ";
-      }
+    // &:after {
+    //     display: table;
+    //     clear: both;
+    //     visibility: hidden;
+    //     height: 0;
+    //     overflow: hidden;
+    //     content: " ";
+    //   }
     .col {
-        float: left;
+        display: inline-block;
         width: 33.3%;
         height: auto;
         margin-bottom: 10px;

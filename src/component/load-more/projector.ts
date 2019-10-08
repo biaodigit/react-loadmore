@@ -13,11 +13,11 @@ class Projector {
     public anchorItem = { index: 0, offset: 0 }
     public cachedItemRect: Array<Cache> = []
 
-    private divDom: HTMLDivElement
+    private divDom: HTMLElement
     // private averageHeight: number
     private callback: (CallBack)
 
-    constructor(opt: { divDom: HTMLDivElement, averageHeight?: number }) {
+    constructor(opt: { divDom: HTMLElement, averageHeight?: number }) {
         this.divDom = opt.divDom
         // this.averageHeight = opt.averageHeight
     }
@@ -25,7 +25,8 @@ class Projector {
     public up() {
         const offset = this.divDom.scrollTop - this.anchorItem.offset;
         const anchorItemRect = this.cachedItemRect[this.anchorItem.index]
-        if (offset > anchorItemRect.height) {
+        console.log(this.cachedItemRect)
+        if (offset * 3 > anchorItemRect.height) {
             const currentAnchorItemTop = anchorItemRect.top + offset
             const itemIndex = this.cachedItemRect.findIndex(item => item.bottom > currentAnchorItemTop)
             this.startIndex = itemIndex > 8 ? itemIndex - 8 : 0
@@ -43,6 +44,7 @@ class Projector {
         //   const startItem = this.cachedItemRect[this.startIndex]
         //   const upContentPlacehloderHeight = startItem ? startItem.top : 0
         this.callback(this.startIndex,this.endIndex)
+        // console.log(this.startIndex,this.endIndex)
     }
 
     public subscribe(callback: CallBack) {
