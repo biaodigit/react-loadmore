@@ -11,7 +11,7 @@ interface PropsType {
 }
 
 const ThreeColList: React.FC<PropsType> = (props) => {
-    const { projector } = props
+    const { projector, startIndex, endIndex } = props
     const renderCell = (item: any) => {
         return (
             <React.Fragment>
@@ -23,11 +23,14 @@ const ThreeColList: React.FC<PropsType> = (props) => {
         )
     }
 
+    console.log(startIndex, endIndex)
     return (
         <div className="three-col-wrap">
-            {props.data.map((item, index) => (
-                <Item renderCell={renderCell} projector={projector} item={item} itemIndex={index} key={index} />
-            ))}
+            {props.data.map((item, index) => {
+                if (index >= startIndex && index <= endIndex) {
+                    return <Item renderCell={renderCell} projector={projector} item={item} itemIndex={index} key={index} />
+                }
+            })}
         </div>
     )
 }

@@ -1,110 +1,124 @@
-import * as React from 'react'
+import * as React from 'react';
+// import IntersectionObserver from 'intersection-observer-polyfill'
 import Projector from './projector'
-import './index.scss'
-
+// import Loading from '@/base/loading';
 
 interface PropsType {
-    onBottom: () => void
-    hasMore: boolean
+  onBottom?: () => Promise<void>
+  hasMore: boolean
+  footer?: React.ReactNode
+  cache?: Array<Cache>
+
 }
 
 interface StateType {
-    loading: boolean
-    startIndex: number
-    endIndex: number
+  loading: boolean
+  upperPlaceholderHeight: string
+  underPlaceholderHeight: string
+  startIndex: number
+  endIndex: number
 }
 
 class LoadMore extends React.Component<PropsType, StateType> {
-    public divDom: React.RefObject<HTMLDivElement>
+  public loadMoreRef: React.RefObject<HTMLDivElement>
 
-    private io: any
-    private footerRef: React.RefObject<HTMLDivElement>
-    private scrollTop: number
-    private projector: Projector
+  private io: any
+  private footerRef: React.RefObject<HTMLDivElement>
+  private scrollTop: number
+  private projector!: Projector
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            loading: false,
-            startIndex: 0,
-            endIndex: 17
-        }
-        this.footerRef = React.createRef()
-        this.divDom = React.createRef()
+
+  constructor(props) {
+    super(props)
+    this.state = {
+      loading: false,
+      upperPlaceholderHeight: '0px',
+      underPlaceholderHeight: '0px',
+      startIndex: 0,
+      endIndex: 17
+    }
+    this.footerRef = React.createRef()
+    this.loadMoreRef = React.createRef()
+    this.scrollTop = 0;
+  }
+
+  private initObserveScrollLoad(entries) {
+    const { onBottom, hasMore } = this.props
+    if (!hasMore) {
+      this.io.disconnect()
+    }
+    const { loading } = this.state
+    entries.forEach(item => {
+      if (item.intersectionRatio <= 0 || loading) {
+        return
+      }
+
+      this.setState({
+        loading: true
+      })
+
+      onBottom()
+
+      this.setState({
+          loading: false
+      })
+    })
+  }
+
+  UNSAFE_componentWillMount() {
+    this.projector = new Projector({})
+  }
+
+  componentDidMount() {
+    this.io = new IntersectionObserver((entries) => this.initObserveScrollLoad(entries))
+    this.io.observe(this.footerRef.current)
+    this.projector.divDom = document.documentElement
+    this.projector.subscribe((startIndex, endIndex, upperPlaceholderHeight, underPlaceholderHeight) => {
+      this.setState({
+        startIndex,
+        endIndex,
+        upperPlaceholderHeight: upperPlaceholderHeight + 'px',
+        underPlaceholderHeight: underPlaceholderHeight + 'px'
+      })
+    })
+    window.addEventListener('scroll', this.onScroll.bind(this))
+    console.log(this.projector.cachedItemRect)
+  }
+
+  public render() {
+    let { hasMore } = this.props;
+    let { startIndex, endIndex, underPlaceholderHeight, upperPlaceholderHeight } = this.state
+
+    const childrenWithProps = React.Children.map(this.props.children, (child: any) => {
+      return React.cloneElement(child, { projector: this.projector || {}, startIndex, endIndex })
+    })
+
+    return (
+      <div ref={this.loadMoreRef}>
+        <div style={{ height: upperPlaceholderHeight }}></div>
+        {childrenWithProps}
+        <div style={{ height: underPlaceholderHeight }}></div>
+        {hasMore && <div ref={this.footerRef}></div>}
+      </div>
+    )
+  }
+
+  componentWillUnmount() {
+    if (this.io) {
+      this.io = null
+    }
+  }
+
+  private onScroll() {
+    const newScrollTop = document.body.scrollTop || document.documentElement.scrollTop
+    if (this.scrollTop < newScrollTop) {
+      this.projector.up()
+    } else {
+      this.projector.down()
     }
 
-    private initScrollLoad(entries) {
-        const { onBottom, hasMore } = this.props
-        entries.forEach(item => {
-            if (item.intersectionRatio <= 0 || !hasMore) {
-                return
-            }
-
-            this.setState({
-                loading: true
-            })
-
-            onBottom()
-        })
-    }
-
-    public componentWillMount() {
-        console.log(this.divDom)
-        this.projector = new Projector({ divDom: document.documentElement })
-        this.projector.subscribe((startIndex, endIndex) => {
-            this.setState({
-                startIndex,
-                endIndex
-            })
-        })
-    }
-
-    public componentDidMount() {
-        this.io = new IntersectionObserver((entries) => this.initScrollLoad(entries))
-        this.io.observe(this.footerRef.current)
-        // this.projector = new Projector({ divDom: this.divDom.current })
-        // this.projector.subscribe((startIndex, endIndex) => {
-        //     this.setState({
-        //         startIndex,
-        //         endIndex
-        //     })
-        // })
-
-        // let container = document.querySelector('.container')
-        window.addEventListener('scroll', this.onScroll.bind(this))
-        document.documentElement.scrollTop = 500
-        // this.divDom.current.scrollTop
-
-    }
-
-    public render() {
-        let { startIndex, endIndex } = this.state
-        const childrenWithProps = React.Children.map(this.props.children, (child: any) => {
-            return React.cloneElement(child, { startIndex, endIndex, projector: this.projector })
-        })
-        return (
-            <div  className="container">
-                <div ref={this.divDom}>
-                    {childrenWithProps}
-                    <div ref={this.footerRef}></div>
-                    {/* {loading ? <Loading /> : null} */}
-                </div>
-            </div>
-        )
-    }
-
-    private onScroll() {
-        // console.log(this.divDom.current.scrollTop)
-        const newScrollTop = document.body.scrollTop || document.documentElement.scrollTop
-        // console.log(newScrollTop)
-        if (this.scrollTop < newScrollTop) {
-            this.projector.up()
-        } else {
-            this.projector.down()
-        }
-
-        this.scrollTop = this.divDom.current.scrollTop
-    }
+    this.scrollTop = document.body.scrollTop || document.documentElement.scrollTop
+  }
 }
 
-export default LoadMore;
+export default LoadMore

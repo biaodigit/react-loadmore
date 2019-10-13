@@ -31,11 +31,11 @@ class Item extends React.Component<PropsType> {
     if (prevItem) {
       const bottom = prevItem.bottom + rect.height;
       const top = prevItem.bottom;
-      cachedItemRect[itemIndex] = { index: itemIndex, top, bottom, height: rect.height }
+      cachedItemRect[itemIndex] = !cachedItemRect[itemIndex] ? { index: itemIndex, top, bottom, height: rect.height } : cachedItemRect[itemIndex]
     } else {
       const bottom = rect.bottom;
       const top = rect.top;
-      cachedItemRect[itemIndex] = { index: itemIndex, top, bottom, height: rect.height }
+      cachedItemRect[itemIndex] = !cachedItemRect[itemIndex] ? { index: itemIndex, top, bottom, height: rect.height } : cachedItemRect[itemIndex]
     }
   }
 
