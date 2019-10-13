@@ -22,11 +22,14 @@ class App extends React.Component<{}, StateType> {
     }
 
 
-    loadMore() {
-       let list = this.state.list.slice(0)
-       this.setState({
-           list: list.concat(arr)
-       })
+    async loadMore() {
+        let list = []
+        await setTimeout(() => {
+            list = this.state.list.slice(0)
+            this.setState({
+                list: list.concat(arr)
+            })
+        }, 100)
     }
 
     render() {
