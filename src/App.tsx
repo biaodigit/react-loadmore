@@ -29,7 +29,7 @@ class App extends React.Component<{}, StateType> {
             this.setState({
                 list: list.concat(arr)
             })
-        }, 100)
+        })
     }
 
     render() {

@@ -71,6 +71,7 @@ class LoadMore extends React.Component<PropsType, StateType> {
     }
 
     componentDidMount() {
+        const top = this.projector.cachedItemRect[6].top
         this.io = new IntersectionObserver((entries) => this.initObserveScrollLoad(entries))
         this.io.observe(this.footerRef.current)
         this.projector.divDom = document.documentElement
@@ -83,7 +84,8 @@ class LoadMore extends React.Component<PropsType, StateType> {
             })
         })
         window.addEventListener('scroll', this.onScroll.bind(this))
-        console.log(this.projector.cachedItemRect)
+        this.projector.initAnchor(6, top)
+        console.log(this.projector)
     }
 
     public render() {

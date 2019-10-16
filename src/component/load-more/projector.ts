@@ -13,7 +13,7 @@ class Projector {
     // 渲染结束坐标
     public endIndex = 0
     // 锚点
-    public anchorItem = { index: 6, offset: 458 }
+    public anchorItem: { index: number, offset: number }
     // 缓存数组
     public cachedItemRect: Array<Cache> = []
     public divDom: HTMLElement
@@ -24,6 +24,13 @@ class Projector {
     constructor(opt: { divDom?: HTMLElement, averageHeight?: number }) {
         this.divDom = opt.divDom
         this.averageHeight = opt.averageHeight
+    }
+
+    public initAnchor(index: number, offset: number) {
+        this.anchorItem = {
+            index,
+            offset
+        }
     }
 
     public up() {
@@ -72,6 +79,7 @@ class Projector {
                 this.anchorItem.index = itemIndex
                 this.anchorItem.offset = this.cachedItemRect[itemIndex].top
             } else {
+
             }
             this.next()
         }
