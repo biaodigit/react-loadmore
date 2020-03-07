@@ -50,12 +50,12 @@ module.exports = {
             async: false,
             tsconfig: path.resolve(__dirname, './tsconfig.json')
         }),
-        new OpenBrowserPlugin({ url: 'http://localhost:8888' })
+        new OpenBrowserPlugin({ url: 'http://localhost:8887' })
     ],
     devServer: {
         contentBase: path.join(__dirname, 'dist'),
         compress: true,
-        port: 8888
+        port: 8887
     },
     resolve: {
         extensions: ['.ts', '.tsx', '.js', '.jsx']

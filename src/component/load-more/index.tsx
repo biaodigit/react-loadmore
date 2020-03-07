@@ -40,6 +40,7 @@ class LoadMore extends React.Component<PropsType, StateType> {
         this.footerRef = React.createRef()
         this.loadMoreRef = React.createRef()
         this.scrollTop = 0;
+        this.projector = new Projector({})
     }
 
     private initObserveScrollLoad(entries) {
@@ -65,11 +66,6 @@ class LoadMore extends React.Component<PropsType, StateType> {
         })
     }
 
-    UNSAFE_componentWillMount() {
-        // 在未渲染dom之前生成投影类  
-        this.projector = new Projector({})
-    }
-
     componentDidMount() {
         const top = this.projector.cachedItemRect[6].top
         this.io = new IntersectionObserver((entries) => this.initObserveScrollLoad(entries))
@@ -85,7 +81,6 @@ class LoadMore extends React.Component<PropsType, StateType> {
         })
         window.addEventListener('scroll', this.onScroll.bind(this))
         this.projector.initAnchor(6, top)
-        console.log(this.projector)
     }
 
     public render() {

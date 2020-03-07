@@ -10,7 +10,7 @@ interface PropsType {
     projector?: Projector
 }
 
-const ThreeColList: React.FC<PropsType> = (props) => {
+const ThreeColList: React.FC<PropsType> = React.memo((props) => {
     const { projector, startIndex, endIndex } = props
     const renderCell = (item: any) => {
         return (
@@ -23,7 +23,6 @@ const ThreeColList: React.FC<PropsType> = (props) => {
         )
     }
 
-    console.log(startIndex, endIndex)
     return (
         <div className="three-col-wrap">
             {props.data.map((item, index) => {
@@ -33,6 +32,6 @@ const ThreeColList: React.FC<PropsType> = (props) => {
             })}
         </div>
     )
-}
+})
 
 export default ThreeColList;

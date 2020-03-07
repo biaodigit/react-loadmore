@@ -9,7 +9,8 @@ interface PropsType {
   projector?: Projector
 }
 
-class Item extends React.Component<PropsType> {
+
+class Item extends React.PureComponent<PropsType> {
   private itemRef: React.RefObject<HTMLDivElement>
   constructor(props) {
     super(props)
